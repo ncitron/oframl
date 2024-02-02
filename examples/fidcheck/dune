@@ -1,0 +1,5 @@
+(executable
+ (name main)
+ (public_name fidcheck)
+ (libraries oframl ppx_string)
+ (preprocess (pps ppx_string)))

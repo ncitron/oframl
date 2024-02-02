@@ -1,9 +1,3 @@
-## Oframl
-Oframl is a simple framework for building Farcaster Frames in OCaml.
-
-## Usage
-
-```OCaml
 open Oframl
 
 let image_handler (data : string) =
@@ -42,7 +36,3 @@ let post_handler (act : action) (_data : string) : frame =
 let base_url = "https://df78-72-69-118-50.ngrok-free.app" in
 let start = Server.start base_url frame_handler post_handler image_handler in
 Lwt_main.run start
-```
-
-## Examples
-To view more examples see (examples)[./examples]

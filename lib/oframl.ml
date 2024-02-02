@@ -47,7 +47,10 @@ type frame = Frame.t
 
 (* Action module *)
 module Action = struct
-  type t = { button_index : int [@key "buttonIndex"] }
+  type t = 
+    { button_index : int [@key "buttonIndex"] 
+    ; fid: int
+    }
   [@@deriving yojson { strict = false }]
 end
 
