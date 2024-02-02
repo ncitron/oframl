@@ -1,5 +1,5 @@
 ## oframl
-Oframl is a simple framework for build Farcaster Frames in OCaml.
+Oframl is a simple framework for building Farcaster Frames in OCaml.
 
 ## usage
 
