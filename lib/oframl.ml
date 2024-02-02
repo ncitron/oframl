@@ -3,10 +3,8 @@ module Button = struct
   type t = { content : string }
 
   let render button index =
-    Printf.sprintf
-      "<meta property='fc:frame:button:%i' content='%s'/>"
-      index
-      button.content
+    [%string
+      "<meta property='fc:frame:button:%{index#Int}' content='%{button.content}'/>"]
   ;;
 end
 
@@ -30,25 +28,18 @@ module Frame = struct
       base_url ^ "/image/" ^ string_of_float (Unix.time ()) ^ "/" ^ frame.image_extra_data
     in
     let post_url = base_url ^ "/post/" ^ frame.post_extra_data in
-    Printf.sprintf
-      {|
-        <!DOCTYPE html>
+    [%string
+      {|<!DOCTYPE html>
         <html>
           <head>
-            <meta property='og:title' content='%s'/>
-            <meta property='og:image' content='%s' />
-  	  		  <meta property='fc:frame' content='vNext' />
-  	  		  <meta property='fc:frame:image' content='%s'/>
-            <meta property='fc:frame:post_url' content='%s' />
-            %s
-          </head>
-        </html>
-      |}
-      frame.title
-      image_url
-      image_url
-      post_url
-      buttons
+            <meta property='og:title' content='%{frame.title}'/>
+            <meta property='og:image' content='%{image_url}' />
+            <meta property='fc:frame' content='vNext' />
+            <meta property='fc:frame:image' content='%{image_url}'/>
+            <meta property='fc:frame:post_url' content='%{post_url}' />
+            %{buttons}
+            </head>
+        </html>|}]
   ;;
 end
 
@@ -83,7 +74,7 @@ module Server = struct
           ~status:`OK
           ~body:(Frame.render (frame_handler ()) base_url)
           ()
-      | [ "image"; _; data] ->
+      | [ "image"; _; data ] ->
         let headers = Cohttp.Header.init_with "Content-Type" "image/svg+xml" in
         let headers = Cohttp.Header.add headers "Cache-Control" "no-cache" in
         Cohttp_lwt_unix.Server.respond_string

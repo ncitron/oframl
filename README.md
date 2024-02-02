@@ -9,22 +9,21 @@ open Oframl
 let counter = ref 0
 
 let image_handler (_extra_data : string) =
-  {|
-      <svg width='191' height='100' xmlns='http://www.w3.org/2000/svg'>
+  let counter = string_of_int !counter in
+  [%string
+    {|<svg width='191' height='100' xmlns='http://www.w3.org/2000/svg'>
         <rect width='100%' height='100%' fill='black'/>
-        <text x='95.5' y='40' text-anchor='middle' 
-          dominant-baseline='middle' 
+        <text x='95.5' y='40' text-anchor='middle'
+          dominant-baseline='middle'
           font-family='Arial' font-size='12' fill='white'>
           This Frame is Written in OCaml
         </text>
-        <text x='95.5' y='60' text-anchor='middle' 
-          dominant-baseline='middle' 
+        <text x='95.5' y='60' text-anchor='middle'
+          dominant-baseline='middle'
           font-family='Arial' font-size='12' fill='white'>
-          counter: |}
-  ^ string_of_int !counter
-  ^ {|</text>
-      </svg>
-    |}
+          counter: %{counter}
+        </text>
+      </svg>|}]
 ;;
 
 let frame () : frame =
@@ -44,7 +43,7 @@ let post_handler (act : action) (_extra_data : string) : frame =
   frame ()
 ;;
 
-let base_url = " https://df78-72-69-118-50.ngrok-free.app" in
+let base_url = "https://df78-72-69-118-50.ngrok-free.app" in
 let start = Server.start base_url frame_handler post_handler image_handler in
 Lwt_main.run start
 ```

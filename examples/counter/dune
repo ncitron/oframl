@@ -1,4 +1,5 @@
 (executable
  (name main)
  (public_name counter)
- (libraries oframl))
+ (libraries oframl ppx_string)
+ (preprocess (pps ppx_string)))
