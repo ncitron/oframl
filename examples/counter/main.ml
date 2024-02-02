@@ -2,7 +2,7 @@ open Oframl
 
 let counter = ref 0
 
-let image_handler (_data : string) =
+let image_handler (_extra_data : string) =
   {|
       <svg width='191' height='100' xmlns='http://www.w3.org/2000/svg'>
         <rect width='100%' height='100%' fill='black'/>
@@ -31,7 +31,7 @@ let frame () : frame =
 
 let frame_handler () = frame ()
 
-let post_handler (act : action) (_data : string) : frame =
+let post_handler (act : action) (_extra_data : string) : frame =
   let () =
     if act.button_index = 1 then counter := !counter + 1 else counter := !counter - 1
   in
