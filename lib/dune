@@ -1,0 +1,5 @@
+(library
+ (public_name oframl)
+ (name oframl)
+ (libraries cohttp-lwt-unix yojson ppx_deriving_yojson.runtime)
+ (preprocess (pps ppx_deriving_yojson)))
