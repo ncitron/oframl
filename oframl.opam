@@ -5,7 +5,7 @@ description: "A framework for building Farcaster Frames in OCaml"
 maintainer: ["Noah Citron"]
 authors: ["Noah Citron"]
 license: "MIT"
-tags: ["Farcaster" "Frames"]
+tags: ["topics" "Farcaster" "Frames"]
 homepage: "https://github.com/ncitron/oframl"
 doc: "https://github.com/ncitron/oframl"
 bug-reports: "https://github.com/ncitron/oframl/issues"
@@ -34,4 +34,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/username/reponame.git"
+dev-repo: "git+https://github.com/ncitron/oframl.git"
