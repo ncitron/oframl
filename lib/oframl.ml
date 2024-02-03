@@ -17,6 +17,7 @@ module Frame = struct
     ; image_extra_data : string
     ; post_extra_data : string
     ; buttons : button list
+    ; input : string option
     }
 
   let render frame base_url =
@@ -26,6 +27,12 @@ module Frame = struct
     in
     let image_url =
       base_url ^ "/image/" ^ string_of_float (Unix.time ()) ^ "/" ^ frame.image_extra_data
+    in
+    let input_tag =
+      match frame.input with
+      | Some input ->
+        [%string "<meta property='fc:frame:input:text' content='%{input}' />"]
+      | None -> ""
     in
     let post_url = base_url ^ "/post/" ^ frame.post_extra_data in
     [%string
@@ -37,6 +44,7 @@ module Frame = struct
             <meta property='fc:frame' content='vNext' />
             <meta property='fc:frame:image' content='%{image_url}'/>
             <meta property='fc:frame:post_url' content='%{post_url}' />
+            %{input_tag}
             %{buttons}
             </head>
         </html>|}]
@@ -47,9 +55,10 @@ type frame = Frame.t
 
 (* Action module *)
 module Action = struct
-  type t = 
-    { button_index : int [@key "buttonIndex"] 
-    ; fid: int
+  type t =
+    { button_index : int [@key "buttonIndex"]
+    ; input_text : string option [@default None] [@key "inputText"]
+    ; fid : int
     }
   [@@deriving yojson { strict = false }]
 end

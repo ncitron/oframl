@@ -2,9 +2,9 @@ open Oframl
 
 let image_handler (data : string) =
   let str = if String.equal data "initial" then
-    "Click to fetch FID"
+    "Waiting for message"
   else
-    [%string "FID: %{data}"]
+    [%string "Message: %{data}"]
   in
   [%string
     {|<svg width='191' height='100' xmlns='http://www.w3.org/2000/svg'>
@@ -18,17 +18,17 @@ let image_handler (data : string) =
 ;;
 
 let frame_handler (): frame = 
-  { title = "FID Check"
+  { title = "Echo"
   ; image_extra_data = "initial"
   ; post_extra_data = ""
-  ; buttons = [ { content = "Check FID" } ]
-  ; input = None
+  ; buttons = [ { content = "Send" } ]
+  ; input = Some "message"
   }
 ;;
 
 let post_handler (act : action) (_data : string) : frame =
-  { title = "FID Check"
-  ; image_extra_data = string_of_int act.fid
+  { title = "Echo"
+  ; image_extra_data = Option.get act.input_text
   ; post_extra_data = ""
   ; buttons = []
   ; input = None
