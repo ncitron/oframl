@@ -79,9 +79,12 @@ module Server = struct
     =
     let handler _con req body =
       let open Cohttp in
-      let uri = req |> Request.uri |> Uri.path in
-      let uri = List.tl (String.split_on_char '/' uri) in
-      match uri with
+      let path = req |> Request.uri |> Uri.path in
+      let path = List.tl (String.split_on_char '/' path) in
+      let base_path = base_url |> Uri.of_string |> Uri.path in
+      let base_path = List.tl (String.split_on_char '/' base_path) in
+      let path = List.filteri (fun i p -> (List.nth_opt base_path i) <> (Some p)) path in
+      match path with
       | [ "frame" ] ->
         Cohttp_lwt_unix.Server.respond_string
           ~status:`OK
