@@ -72,7 +72,7 @@ type post = { untrusted_data : Action.t [@key "untrustedData"] }
 module Server = struct
   let start
     (base_url : string)
-    (port: int)
+    (port : int)
     (frame_handler : unit -> frame)
     (post_handler : action -> string -> frame)
     (image_handler : string -> string)
@@ -117,3 +117,24 @@ module Server = struct
     Cohttp_lwt_unix.Server.create ~ctx ~mode:(`TCP (`Port port)) server
   ;;
 end
+
+(* Utils module *)
+module Utils = struct
+  let sanitize_text txt =
+    let buf = Buffer.create (String.length txt) in
+    let () =
+      String.iter
+        (fun c ->
+          match c with
+          | '&' -> Buffer.add_string buf "&amp;"
+          | '<' -> Buffer.add_string buf "&lt;"
+          | '>' -> Buffer.add_string buf "&gt;"
+          | '"' -> Buffer.add_string buf "&quot;"
+          | '\'' -> Buffer.add_string buf "&apos;"
+          | c -> Buffer.add_char buf c)
+        txt
+    in
+    Buffer.contents buf
+  ;;
+end
+

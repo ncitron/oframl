@@ -44,7 +44,7 @@ let post_handler (act : action) (_data : string) : frame =
     let x = Random.int 1910 in
     let y = Random.int 1000 in
     let txt = match act.input_text with
-    | Some txt -> txt
+    | Some txt -> Utils.sanitize_text txt
     | None -> ""
     in
     let msg = { x = x; y = y; text = txt; fid = act.fid} in
