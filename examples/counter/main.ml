@@ -25,6 +25,7 @@ let frame () : frame =
   ; image_extra_data = ""
   ; post_extra_data = ""
   ; buttons = [ { content = "+" }; { content = "-" } ]
+  ; input = None
   }
 ;;
 
@@ -38,5 +39,5 @@ let post_handler (act : action) (_extra_data : string) : frame =
 ;;
 
 let base_url = "https://df78-72-69-118-50.ngrok-free.app" in
-let start = Server.start base_url frame_handler post_handler image_handler in
+let start = Server.start base_url 8080 frame_handler post_handler image_handler in
 Lwt_main.run start

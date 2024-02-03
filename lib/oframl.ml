@@ -72,6 +72,7 @@ type post = { untrusted_data : Action.t [@key "untrustedData"] }
 module Server = struct
   let start
     (base_url : string)
+    (port: int)
     (frame_handler : unit -> frame)
     (post_handler : action -> string -> frame)
     (image_handler : string -> string)
@@ -113,6 +114,6 @@ module Server = struct
     let server = Cohttp_lwt_unix.Server.make ~callback:handler () in
     let* ctx = Conduit_lwt_unix.init ~src:"0.0.0.0" () in
     let ctx = Cohttp_lwt_unix.Client.custom_ctx ~ctx () in
-    Cohttp_lwt_unix.Server.create ~ctx ~mode:(`TCP (`Port 8000)) server
+    Cohttp_lwt_unix.Server.create ~ctx ~mode:(`TCP (`Port port)) server
   ;;
 end
