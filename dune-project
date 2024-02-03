@@ -7,20 +7,22 @@
 (source
  (github username/reponame))
 
-(authors "Author Name")
+(authors "Noah Citron")
 
-(maintainers "Maintainer Name")
+(maintainers "Noah Citron")
 
-(license LICENSE)
+(license MIT)
 
-(documentation https://url/to/documentation)
+(homepage https://github.com/ncitron/oframl)
+(documentation https://github.com/ncitron/oframl)
+(bug_reports https://github.com/ncitron/oframl/issues)
 
 (package
  (name oframl)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml dune cohttp-lwt-unix yojson ppx_deriving_yojson)
+ (synopsis "Farcaster Frames in OCaml")
+ (description "A framework for building Farcaster Frames in OCaml")
+ (depends ocaml dune cohttp lwt cohttp-lwt-unix yojson ppx_deriving_yojson ppx_string)
  (tags
-  (topics "to describe" your project)))
+  (topics "Farcaster" "Frames")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
