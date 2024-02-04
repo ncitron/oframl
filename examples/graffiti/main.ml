@@ -40,27 +40,26 @@ let frame_handler () : frame =
 
 let post_handler (act : action) (_data : string) : frame =
   let fids = List.map (fun msg -> msg.fid) !messages in
-  let () = if Option.is_none (List.find_opt (fun fid -> act.fid = fid) fids) then
+  let () = if Option.is_none (List.find_opt (fun fid -> act.interactor.fid = fid) fids) then
     let x = Random.int 1910 in
     let y = Random.int 1000 in
-    let txt = match act.input_text with
-    | Some txt -> Utils.sanitize_text txt
-    | None -> ""
-    in
-    let msg = { x = x; y = y; text = txt; fid = act.fid} in
+    let txt = Utils.sanitize_text act.input_text in
+    let msg = { x = x; y = y; text = txt; fid = act.interactor.fid} in
     messages := msg :: !messages
   else
     ()
   in
 
   { title = "Echo"
-  ; image_extra_data = Option.get act.input_text
+  ; image_extra_data = act.input_text
   ; post_extra_data = ""
   ; buttons = []
   ; input = None
   }
 ;;
 
-let base_url = "https://e699-72-69-118-50.ngrok-free.app" in
-let start = Server.start base_url 8080 frame_handler post_handler image_handler in
+let () = Dotenv.export () in
+let base_url = Sys.getenv "BASE_URL" in
+let neynar_key = Sys.getenv "NEYNAR_KEY" in
+let start = Server.start base_url 8000 neynar_key frame_handler post_handler image_handler in
 Lwt_main.run start

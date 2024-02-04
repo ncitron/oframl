@@ -21,7 +21,7 @@
  (name oframl)
  (synopsis "Farcaster Frames in OCaml")
  (description "A framework for building Farcaster Frames in OCaml")
- (depends ocaml dune cohttp lwt cohttp-lwt-unix yojson ppx_deriving_yojson ppx_string)
+ (depends ocaml dune cohttp lwt cohttp-lwt-unix yojson ppx_deriving_yojson ppx_string dotenv)
  (tags
   (topics "Farcaster" "Frames")))
 

@@ -1,10 +1,8 @@
 open Oframl
 
 let image_handler (data : string) =
-  let str = if String.equal data "initial" then
-    "Click to fetch FID"
-  else
-    [%string "FID: %{data}"]
+  let str =
+    if String.equal data "initial" then "Click to fetch FID" else [%string "FID: %{data}"]
   in
   [%string
     {|<svg width='191' height='100' xmlns='http://www.w3.org/2000/svg'>
@@ -17,7 +15,7 @@ let image_handler (data : string) =
       </svg>|}]
 ;;
 
-let frame_handler (): frame = 
+let frame_handler () : frame =
   { title = "FID Check"
   ; image_extra_data = "initial"
   ; post_extra_data = ""
@@ -28,13 +26,15 @@ let frame_handler (): frame =
 
 let post_handler (act : action) (_data : string) : frame =
   { title = "FID Check"
-  ; image_extra_data = string_of_int act.fid
+  ; image_extra_data = string_of_int act.interactor.fid
   ; post_extra_data = ""
   ; buttons = []
   ; input = None
   }
 ;;
 
-let base_url = "https://e699-72-69-118-50.ngrok-free.app" in
-let start = Server.start base_url 8080 frame_handler post_handler image_handler in
-Lwt_main.run start
+let () = Dotenv.export () in
+let base_url = Sys.getenv "BASE_URL" in
+let neynar_key = Sys.getenv "NEYNAR_KEY" in
+Lwt_main.run
+  (Server.start base_url 8000 neynar_key frame_handler post_handler image_handler)

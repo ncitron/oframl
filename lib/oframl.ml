@@ -55,24 +55,84 @@ type frame = Frame.t
 
 (* Action module *)
 module Action = struct
-  type t =
-    { button_index : int [@key "buttonIndex"]
-    ; input_text : string option [@default None] [@key "inputText"]
-    ; fid : int
+  type interactor =
+    { fid : int
+    ; username : string
+    ; display_name : string
     }
   [@@deriving yojson { strict = false }]
+
+  type t =
+    { button_index : int
+    ; input_text : string
+    ; interactor : interactor
+    }
 end
 
 type action = Action.t
+type interactor = Action.interactor
 
-type post = { untrusted_data : Action.t [@key "untrustedData"] }
+type trusted_data = { message_bytes : string [@key "messageBytes"] }
 [@@deriving yojson { strict = false }]
+
+type post = { trusted_data : trusted_data [@key "trustedData"] }
+[@@deriving yojson { strict = false }]
+
+(* Neynar Module *)
+module Neynar = struct
+  type validate_request = { message_bytes_in_hex : string }
+  [@@deriving yojson { strict = false }]
+
+  type button_response = { index : int } [@@deriving yojson { strict = false }]
+  type input_response = { text : string } [@@deriving yojson { strict = false }]
+
+  type action_response =
+    { tapped_button : button_response
+    ; input : input_response [@default { text = "" }]
+    ; interactor : Action.interactor
+    }
+  [@@deriving yojson { strict = false }]
+
+  type validate_response =
+    { valid : bool
+    ; action : action_response
+    }
+  [@@deriving yojson { strict = false }]
+
+  let validate (message : string) (api_key : string) : action Lwt.t =
+    let open Lwt.Syntax in
+    let uri = Uri.of_string "https://api.neynar.com/v2/farcaster/frame/validate" in
+    let headers =
+      Cohttp.Header.of_list [ "api_key", api_key; "Content-Type", "application/json" ]
+    in
+    let req = { message_bytes_in_hex = message } in
+    let body =
+      Cohttp_lwt.Body.of_string (Yojson.Safe.to_string (validate_request_to_yojson req))
+    in
+    let* _, res_body = Cohttp_lwt_unix.Client.post ~headers ~body uri in
+    let* body = Cohttp_lwt.Body.to_string res_body in
+    let json = Yojson.Safe.from_string body in
+    let validate_res =
+      match validate_response_of_yojson json with
+      | Ok res -> res
+      | Error err -> raise (Failure err)
+    in
+    let action : action =
+      { button_index = validate_res.action.tapped_button.index
+      ; input_text = validate_res.action.input.text
+      ; interactor = validate_res.action.interactor
+      }
+    in
+    Lwt.return action
+  ;;
+end
 
 (* Server module *)
 module Server = struct
   let start
     (base_url : string)
     (port : int)
+    (neynar_key : string)
     (frame_handler : unit -> frame)
     (post_handler : action -> string -> frame)
     (image_handler : string -> string)
@@ -83,7 +143,7 @@ module Server = struct
       let path = List.tl (String.split_on_char '/' path) in
       let base_path = base_url |> Uri.of_string |> Uri.path in
       let base_path = List.tl (String.split_on_char '/' base_path) in
-      let path = List.filteri (fun i p -> (List.nth_opt base_path i) <> (Some p)) path in
+      let path = List.filteri (fun i p -> List.nth_opt base_path i <> Some p) path in
       match path with
       | [ "frame" ] ->
         Cohttp_lwt_unix.Server.respond_string
@@ -102,9 +162,9 @@ module Server = struct
         let open Lwt.Syntax in
         let* body = Cohttp_lwt.Body.to_string body in
         let json = Yojson.Safe.from_string body in
-        let action =
+        let* action =
           match post_of_yojson json with
-          | Ok post -> post.untrusted_data
+          | Ok post -> Neynar.validate post.trusted_data.message_bytes neynar_key
           | Error e -> raise (Failure e)
         in
         Cohttp_lwt_unix.Server.respond_string
@@ -140,4 +200,3 @@ module Utils = struct
     Buffer.contents buf
   ;;
 end
-

@@ -18,6 +18,7 @@ depends: [
   "yojson"
   "ppx_deriving_yojson"
   "ppx_string"
+  "dotenv"
   "odoc" {with-doc}
 ]
 build: [
