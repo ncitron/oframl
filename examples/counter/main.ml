@@ -38,6 +38,8 @@ let post_handler (act : action) (_extra_data : string) : frame =
   frame ()
 ;;
 
-let base_url = "https://df78-72-69-118-50.ngrok-free.app" in
-let start = Server.start base_url 8080 frame_handler post_handler image_handler in
+let () = Dotenv.export () in
+let base_url = Sys.getenv "BASE_URL" in
+let neynar_key = Sys.getenv "NEYNAR_KEY" in
+let start = Server.start base_url 8000 neynar_key frame_handler post_handler image_handler in
 Lwt_main.run start
